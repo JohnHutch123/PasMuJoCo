@@ -13,6 +13,9 @@
   {$minenumsize 4}
 {$endif}
 
+// typed pointers into MuJoCo arrays can be indexed: m^.geom_type[i]
+{$pointermath on}
+
 {$ifdef MSWINDOWS}
   {$define PasMuJoCoWindows}
 {$endif}
