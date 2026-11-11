@@ -1,0 +1,10 @@
+PasMuJoCo
+Copyright 2026 John Hutchings
+
+This product includes Object Pascal translations of the C headers of
+MuJoCo (https://github.com/google-deepmind/mujoco),
+Copyright 2021 DeepMind Technologies Limited,
+licensed under the Apache License, Version 2.0.
+
+The dynamic-loading header style is modelled on PasVulkan
+(https://github.com/BeRo1985/pasvulkan) by Benjamin Rosseaux.

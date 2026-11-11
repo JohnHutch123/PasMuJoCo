@@ -1,0 +1,9 @@
+* text=auto
+*.pas text eol=crlf
+*.inc text eol=crlf
+*.dpk text eol=crlf
+*.dpr text eol=crlf
+*.lpr text eol=crlf
+*.dproj text eol=crlf
+*.sh text eol=lf
+*.mjb binary
