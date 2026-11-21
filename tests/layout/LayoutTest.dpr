@@ -23,6 +23,19 @@ begin
   end;
 end;
 
+// Keep the console open when started from the Delphi IDE debugger.
+procedure Finish(AExitCode: Integer);
+begin
+{$ifndef fpc}
+  if DebugHook <> 0 then
+  begin
+    Write('Press Enter to close...');
+    ReadLn;
+  end;
+{$endif}
+  Halt(AExitCode);
+end;
+
 begin
   Failures := 0;
   Checked := 0;
@@ -1831,5 +1844,6 @@ begin
   Check('mjBatchRecord.buf', NativeUInt(@PmjBatchRecord(nil)^.buf), 16);
   WriteLn(Checked, ' layout checks, ', Failures, ' mismatches');
   if Failures > 0 then
-    Halt(1);
+    Finish(1);
+  Finish(0);
 end.
