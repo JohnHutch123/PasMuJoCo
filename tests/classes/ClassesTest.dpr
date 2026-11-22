@@ -77,10 +77,25 @@ begin
   Check(Raised and (Pos(AText, Msg) > 0), AWhat + ' (' + Msg + ')');
 end;
 
+{$ifdef MSWINDOWS}
+function GetConsoleProcessList(lpdwProcessList: PCardinal; dwProcessCount: Cardinal): Cardinal;
+  stdcall; external 'kernel32.dll';
+
+// True when this program got its own console window (started from Explorer
+// or the IDE) rather than running inside an existing command prompt.
+function OwnsConsole: Boolean;
+var
+  Ids: array[0..1] of Cardinal;
+begin
+  Result := GetConsoleProcessList(@Ids[0], 2) <= 1;
+end;
+{$endif}
+
+// Keep the console window open long enough to read the results.
 procedure Finish(AExitCode: Integer);
 begin
-{$ifndef fpc}
-  if DebugHook <> 0 then
+{$ifdef MSWINDOWS}
+  if OwnsConsole{$ifndef fpc} or (DebugHook <> 0){$endif} then
   begin
     Write('Press Enter to close...');
     ReadLn;
@@ -125,6 +140,7 @@ begin
   MuJoCoInitialize('no-such-mujoco-library');
 end;
 
+procedure RunTests;
 begin
   PendulumFile := ExtractFilePath(ParamStr(0)) + 'pendulum.xml';
   if ParamCount >= 1 then
@@ -222,6 +238,19 @@ begin
   CheckRaises(LoadBadXML, 'nosuchtype', 'invalid XML raises EMuJoCo with MuJoCo''s message');
 
   UnloadMuJoCoLibrary;
+end;
+
+begin
+  try
+    RunTests;
+  except
+    on E: Exception do
+    begin
+      // an exception nothing above expected: report it instead of closing
+      Inc(Failures);
+      WriteLn('  FAIL  unexpected ', E.ClassName, ': ', E.Message);
+    end;
+  end;
   WriteLn(Checks, ' checks, ', Failures, ' failures');
   if Failures > 0 then
     Finish(1);
