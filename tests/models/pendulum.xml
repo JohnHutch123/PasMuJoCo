@@ -10,6 +10,6 @@
     </body>
   </worldbody>
   <actuator>
-    <motor name="torque" joint="hinge" gear="1" ctrlrange="-1 1"/>
+    <motor name="torque" joint="hinge" gear="1" ctrlrange="-5 5"/>
   </actuator>
 </mujoco>
