@@ -11,9 +11,8 @@ resolved at runtime from the MuJoCo shared library (`LoadLibrary` /
 statically, so an application starts even when MuJoCo is missing and can
 report that cleanly.
 
-> **Status:** the full MuJoCo 3.17.0 header and dynamic loader are in place
-> and tested on Linux with Free Pascal. The wrapper classes come next; see
-> [Roadmap](#roadmap).
+> **Status:** the MuJoCo 3.17.0 header, dynamic loader and thin wrapper
+> classes are in place, tested with Delphi 12 (Win64) and Free Pascal (Linux).
 
 ## Targets
 
@@ -32,9 +31,10 @@ because MuJoCo's struct layouts change between releases.
 src/                  Pascal units (header, loader, wrapper classes)
   PasMuJoCo.inc       Compiler / platform defines shared by all units
   PasMuJoCo.pas       MuJoCo C API translation + dynamic loader (generated)
+  PasMuJoCoClasses.pas  TMjModel / TMjData wrappers and MuJoCoInitialize
 packages/Delphi12/    Delphi 12 runtime package (PasMuJoCo.dpk)
 packages/Delphi13/    Delphi 13 runtime package (PasMuJoCo.dpk)
-samples/              Small console programs
+samples/HelloMuJoCo/  Smallest useful program (PD control of a pendulum)
 tests/                Record-layout and smoke tests
 tools/                Header generator (see tools/README.md)
 ```
@@ -59,6 +59,37 @@ for 12, `PasMuJoCo370.bpl` for 13), so both can be installed side by side.
 
 **Free Pascal:** add `-Fusrc -Fisrc` to your `fpc` command line, or add `src`
 to the unit paths of your Lazarus project.
+
+## Quick start (classes)
+
+```pascal
+uses PasMuJoCo, PasMuJoCoClasses;
+
+MuJoCoInitialize;                         // loads the library, masks FPU exceptions,
+                                          // turns MuJoCo fatal errors into EMuJoCo
+Model := TMjModel.CreateFromXML('pendulum.xml');
+Data := TMjData.Create(Model);
+try
+  Data.Ctrl[0] := 0.5;
+  Data.Step(1000);
+  WriteLn(Data.Time:0:3, ' ', Data.QPos[0]:0:5);
+finally
+  Data.Free;                              // free data before its model
+  Model.Free;
+end;
+```
+
+- `TMjModel`: `CreateFromXML`, `CreateFromXMLString`, `CreateFromBinary`
+  (`.mjb`), `CreateFromHandle`, `Clone`, `SaveBinary`, `NameToId`,
+  `IdToName`, `Timestep`, and size properties (`nq`, `nv`, `nu`, `nbody`, ...).
+- `TMjData`: `Step`, `Step(Count)`, `Step1`/`Step2`, `Forward`, `Inverse`,
+  `Reset`, `ResetKeyframe`, `Time`, and range-checked `QPos[]`, `QVel[]`,
+  `Ctrl[]`, `Act[]`, `SensorData[]`.
+- Everything else is one call away through `Handle`:
+  `mj_forward(Model.Handle, Data.Handle)`, `Data.Handle^.xpos[3 * body]`.
+- Load and compile errors raise `EMuJoCo` with MuJoCo's own message. After a
+  fatal MuJoCo error during simulation, call `Data.Reset` before stepping again.
+- Call `MuJoCoMaskFPUExceptions` at the start of any extra thread that runs MuJoCo.
 
 ## Header conventions
 
@@ -97,19 +128,21 @@ mj_step(m, d);
 - `tests/layout/LayoutTest.dpr` checks `SizeOf` and every field offset of
   every record (1803 checks) against the C layout of the same release.
 - `tests/smoke/SmokeTest.dpr` loads the library, loads
-  `tests/models/pendulum.xml` and steps it.
+  `tests/models/pendulum.xml` and steps it, using the raw API only.
+- `tests/classes/ClassesTest.dpr` covers the wrapper classes (23 checks),
+  including error handling.
 
 On Linux, `tests/run_tests_linux.sh /path/to/mujoco-3.17.0` builds and runs
-both with Free Pascal. On Windows, build both `.dpr` files in Delphi with
-`src` on the search path, and run them with `mujoco.dll` next to the exe.
+them all with Free Pascal. On Windows, build the `.dpr` files in Delphi with
+`src` on the search path, put `mujoco.dll` and `pendulum.xml` next to the
+exe, and run them (started from the IDE they wait for Enter before closing).
 
 ## Roadmap
 
 1. Repo skeleton. *(done)*
 2. `PasMuJoCo.pas`: types, enums, structs and API function pointers, the
    dynamic loader, and record-layout tests against the C headers. *(done)*
-3. Thin classes, `TMjModel` (load from XML or `.mjb`) and `TMjData` (`Step`,
-   `Forward`, `Reset`), with a console sample for Win64 and Linux.
+3. Thin classes, `TMjModel` and `TMjData`, with a console sample. *(done)*
 
 Rendering is out of scope here. Vulkan visualisation of MuJoCo scenes lives in
 [Vulkan_Package_PRO](https://github.com/JohnHutch123/Vulkan_Package_PRO).
