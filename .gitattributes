@@ -6,4 +6,6 @@
 *.lpr text eol=crlf
 *.dproj text eol=crlf
 *.sh text eol=lf
+*.c text eol=lf
+*.py text eol=lf
 *.mjb binary
