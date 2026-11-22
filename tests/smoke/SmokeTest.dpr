@@ -27,6 +27,19 @@ var
   i: Integer;
   qpos: PmjtNum;
   Angle0: mjtNum;
+// Keep the console open when started from the Delphi IDE debugger.
+procedure Finish(AExitCode: Integer);
+begin
+{$ifndef fpc}
+  if DebugHook <> 0 then
+  begin
+    Write('Press Enter to close...');
+    ReadLn;
+  end;
+{$endif}
+  Halt(AExitCode);
+end;
+
 begin
   // MuJoCo's C code expects IEEE default behaviour (NaN/Inf, no traps)
   SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow,
@@ -43,7 +56,7 @@ begin
   if not LoadMuJoCoLibrary(LibraryFile) then
   begin
     WriteLn('FAIL: ', MuJoCoLastError);
-    Halt(1);
+    Finish(1);
   end;
   WriteLn('MuJoCo ', mj_versionString(), ' loaded');
 
@@ -52,7 +65,7 @@ begin
   if m = nil then
   begin
     WriteLn('FAIL: could not load ', ModelFile, ': ', PAnsiChar(@Error[0]));
-    Halt(1);
+    Finish(1);
   end;
   WriteLn('model: nq=', m^.nq, ' nv=', m^.nv, ' nu=', m^.nu, ' nbody=', m^.nbody,
     ' timestep=', m^.opt.timestep:0:4);
@@ -68,7 +81,7 @@ begin
   if (Abs(d^.time - 1000 * m^.opt.timestep) > 1e-9) or (qpos^ = Angle0) or IsNan(qpos^) then
   begin
     WriteLn('FAIL: simulation did not advance as expected');
-    Halt(1);
+    Finish(1);
   end;
 
   WriteLn('body 1 name: ', mj_id2name(m, mjOBJ_BODY, 1));
@@ -78,4 +91,5 @@ begin
   mj_deleteModel(m);
   UnloadMuJoCoLibrary;
   WriteLn('OK');
+  Finish(0);
 end.

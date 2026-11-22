@@ -436,11 +436,16 @@ def write_layout_tests(S, outdir, expected_path, version):
          'begin', '  Inc(Checked);', '  if AActual <> AExpected then', '  begin',
          '    Inc(Failures);',
          "    WriteLn('MISMATCH ', AName, ': Pascal ', AActual, ', C ', AExpected);",
-         '  end;', 'end;', '', 'begin', '  Failures := 0;', '  Checked := 0;']
+         '  end;', 'end;', '',
+         '// Keep the console open when started from the Delphi IDE debugger.',
+         'procedure Finish(AExitCode: Integer);', 'begin', '{$ifndef fpc}',
+         '  if DebugHook <> 0 then', '  begin', "    Write('Press Enter to close...');",
+         '    ReadLn;', '  end;', '{$endif}', '  Halt(AExitCode);', 'end;', '',
+         'begin', '  Failures := 0;', '  Checked := 0;']
     for key, _, pexpr in entries:
         p.append("  Check('%s', %s, %s);" % (key, pexpr, expected[key]))
     p += ["  WriteLn(Checked, ' layout checks, ', Failures, ' mismatches');",
-          '  if Failures > 0 then', '    Halt(1);', 'end.', '']
+          '  if Failures > 0 then', '    Finish(1);', '  Finish(0);', 'end.', '']
     with open(os.path.join(outdir, 'LayoutTest.dpr'), 'w', newline='\r\n') as fh:
         fh.write('\n'.join(p))
     print('wrote LayoutTest.dpr')
