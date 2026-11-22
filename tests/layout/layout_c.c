@@ -192,7 +192,6 @@ int main(void) {
   printf("mjModel.nflexshelldata %zu\n", offsetof(mjModel, nflexshelldata));
   printf("mjModel.nflextexcoord %zu\n", offsetof(mjModel, nflextexcoord));
   printf("mjModel.nJfe %zu\n", offsetof(mjModel, nJfe));
-  printf("mjModel.nJfv %zu\n", offsetof(mjModel, nJfv));
   printf("mjModel.nmesh %zu\n", offsetof(mjModel, nmesh));
   printf("mjModel.nmeshvert %zu\n", offsetof(mjModel, nmeshvert));
   printf("mjModel.nmeshnormal %zu\n", offsetof(mjModel, nmeshnormal));
@@ -240,6 +239,7 @@ int main(void) {
   printf("mjModel.nuser_sensor %zu\n", offsetof(mjModel, nuser_sensor));
   printf("mjModel.nnames %zu\n", offsetof(mjModel, nnames));
   printf("mjModel.npaths %zu\n", offsetof(mjModel, npaths));
+  printf("mjModel.nplastic %zu\n", offsetof(mjModel, nplastic));
   printf("mjModel.nnames_map %zu\n", offsetof(mjModel, nnames_map));
   printf("mjModel.nJmom %zu\n", offsetof(mjModel, nJmom));
   printf("mjModel.ngravcomp %zu\n", offsetof(mjModel, ngravcomp));
@@ -306,6 +306,7 @@ int main(void) {
   printf("mjModel.jnt_bodyid %zu\n", offsetof(mjModel, jnt_bodyid));
   printf("mjModel.jnt_actuatorid %zu\n", offsetof(mjModel, jnt_actuatorid));
   printf("mjModel.jnt_group %zu\n", offsetof(mjModel, jnt_group));
+  printf("mjModel.jnt_plasticadr %zu\n", offsetof(mjModel, jnt_plasticadr));
   printf("mjModel.jnt_limited %zu\n", offsetof(mjModel, jnt_limited));
   printf("mjModel.jnt_actfrclimited %zu\n", offsetof(mjModel, jnt_actfrclimited));
   printf("mjModel.jnt_actgravcomp %zu\n", offsetof(mjModel, jnt_actgravcomp));
@@ -315,6 +316,7 @@ int main(void) {
   printf("mjModel.jnt_axis %zu\n", offsetof(mjModel, jnt_axis));
   printf("mjModel.jnt_stiffness %zu\n", offsetof(mjModel, jnt_stiffness));
   printf("mjModel.jnt_stiffnesspoly %zu\n", offsetof(mjModel, jnt_stiffnesspoly));
+  printf("mjModel.jnt_springyield %zu\n", offsetof(mjModel, jnt_springyield));
   printf("mjModel.jnt_range %zu\n", offsetof(mjModel, jnt_range));
   printf("mjModel.jnt_actfrcrange %zu\n", offsetof(mjModel, jnt_actfrcrange));
   printf("mjModel.jnt_margin %zu\n", offsetof(mjModel, jnt_margin));
@@ -350,6 +352,7 @@ int main(void) {
   printf("mjModel.geom_priority %zu\n", offsetof(mjModel, geom_priority));
   printf("mjModel.geom_plugin %zu\n", offsetof(mjModel, geom_plugin));
   printf("mjModel.geom_sameframe %zu\n", offsetof(mjModel, geom_sameframe));
+  printf("mjModel.geom_castshadow %zu\n", offsetof(mjModel, geom_castshadow));
   printf("mjModel.geom_solmix %zu\n", offsetof(mjModel, geom_solmix));
   printf("mjModel.geom_solref %zu\n", offsetof(mjModel, geom_solref));
   printf("mjModel.geom_solimp %zu\n", offsetof(mjModel, geom_solimp));
@@ -445,14 +448,14 @@ int main(void) {
   printf("mjModel.flex_stiffnessadr %zu\n", offsetof(mjModel, flex_stiffnessadr));
   printf("mjModel.flex_elemedgeadr %zu\n", offsetof(mjModel, flex_elemedgeadr));
   printf("mjModel.flex_bendingadr %zu\n", offsetof(mjModel, flex_bendingadr));
+  printf("mjModel.flex_plasticadr %zu\n", offsetof(mjModel, flex_plasticadr));
+  printf("mjModel.flex_plasticmode %zu\n", offsetof(mjModel, flex_plasticmode));
   printf("mjModel.flex_shellnum %zu\n", offsetof(mjModel, flex_shellnum));
   printf("mjModel.flex_shelldataadr %zu\n", offsetof(mjModel, flex_shelldataadr));
   printf("mjModel.flex_texcoordadr %zu\n", offsetof(mjModel, flex_texcoordadr));
   printf("mjModel.flex_nodebodyid %zu\n", offsetof(mjModel, flex_nodebodyid));
   printf("mjModel.flex_vertbodyid %zu\n", offsetof(mjModel, flex_vertbodyid));
-  printf("mjModel.flex_vertedgeadr %zu\n", offsetof(mjModel, flex_vertedgeadr));
-  printf("mjModel.flex_vertedgenum %zu\n", offsetof(mjModel, flex_vertedgenum));
-  printf("mjModel.flex_vertedge %zu\n", offsetof(mjModel, flex_vertedge));
+  printf("mjModel.flex_vertcell %zu\n", offsetof(mjModel, flex_vertcell));
   printf("mjModel.flex_edge %zu\n", offsetof(mjModel, flex_edge));
   printf("mjModel.flex_edgeflap %zu\n", offsetof(mjModel, flex_edgeflap));
   printf("mjModel.flex_elem %zu\n", offsetof(mjModel, flex_elem));
@@ -462,7 +465,6 @@ int main(void) {
   printf("mjModel.flex_shell %zu\n", offsetof(mjModel, flex_shell));
   printf("mjModel.flex_vert %zu\n", offsetof(mjModel, flex_vert));
   printf("mjModel.flex_vert0 %zu\n", offsetof(mjModel, flex_vert0));
-  printf("mjModel.flex_vertmetric %zu\n", offsetof(mjModel, flex_vertmetric));
   printf("mjModel.flex_node %zu\n", offsetof(mjModel, flex_node));
   printf("mjModel.flex_node0 %zu\n", offsetof(mjModel, flex_node0));
   printf("mjModel.flexedge_length0 %zu\n", offsetof(mjModel, flexedge_length0));
@@ -478,6 +480,7 @@ int main(void) {
   printf("mjModel.efm0_L %zu\n", offsetof(mjModel, efm0_L));
   printf("mjModel.efmC_perm %zu\n", offsetof(mjModel, efmC_perm));
   printf("mjModel.flex_damping %zu\n", offsetof(mjModel, flex_damping));
+  printf("mjModel.flex_yield %zu\n", offsetof(mjModel, flex_yield));
   printf("mjModel.flex_edgestiffness %zu\n", offsetof(mjModel, flex_edgestiffness));
   printf("mjModel.flex_edgedamping %zu\n", offsetof(mjModel, flex_edgedamping));
   printf("mjModel.flex_edgeequality %zu\n", offsetof(mjModel, flex_edgeequality));
@@ -490,9 +493,6 @@ int main(void) {
   printf("mjModel.flexedge_J_rownnz %zu\n", offsetof(mjModel, flexedge_J_rownnz));
   printf("mjModel.flexedge_J_rowadr %zu\n", offsetof(mjModel, flexedge_J_rowadr));
   printf("mjModel.flexedge_J_colind %zu\n", offsetof(mjModel, flexedge_J_colind));
-  printf("mjModel.flexvert_J_rownnz %zu\n", offsetof(mjModel, flexvert_J_rownnz));
-  printf("mjModel.flexvert_J_rowadr %zu\n", offsetof(mjModel, flexvert_J_rowadr));
-  printf("mjModel.flexvert_J_colind %zu\n", offsetof(mjModel, flexvert_J_colind));
   printf("mjModel.flex_rgba %zu\n", offsetof(mjModel, flex_rgba));
   printf("mjModel.flex_texcoord %zu\n", offsetof(mjModel, flex_texcoord));
   printf("mjModel.mesh_vertadr %zu\n", offsetof(mjModel, mesh_vertadr));
@@ -596,11 +596,13 @@ int main(void) {
   printf("mjModel.eq_solref %zu\n", offsetof(mjModel, eq_solref));
   printf("mjModel.eq_solimp %zu\n", offsetof(mjModel, eq_solimp));
   printf("mjModel.eq_data %zu\n", offsetof(mjModel, eq_data));
+  printf("mjModel.tendon_type %zu\n", offsetof(mjModel, tendon_type));
   printf("mjModel.tendon_adr %zu\n", offsetof(mjModel, tendon_adr));
   printf("mjModel.tendon_num %zu\n", offsetof(mjModel, tendon_num));
   printf("mjModel.tendon_matid %zu\n", offsetof(mjModel, tendon_matid));
   printf("mjModel.tendon_actuatorid %zu\n", offsetof(mjModel, tendon_actuatorid));
   printf("mjModel.tendon_group %zu\n", offsetof(mjModel, tendon_group));
+  printf("mjModel.tendon_plasticadr %zu\n", offsetof(mjModel, tendon_plasticadr));
   printf("mjModel.tendon_treenum %zu\n", offsetof(mjModel, tendon_treenum));
   printf("mjModel.tendon_treeid %zu\n", offsetof(mjModel, tendon_treeid));
   printf("mjModel.ten_J_rownnz %zu\n", offsetof(mjModel, ten_J_rownnz));
@@ -623,6 +625,7 @@ int main(void) {
   printf("mjModel.tendon_armature %zu\n", offsetof(mjModel, tendon_armature));
   printf("mjModel.tendon_frictionloss %zu\n", offsetof(mjModel, tendon_frictionloss));
   printf("mjModel.tendon_lengthspring %zu\n", offsetof(mjModel, tendon_lengthspring));
+  printf("mjModel.tendon_springyield %zu\n", offsetof(mjModel, tendon_springyield));
   printf("mjModel.tendon_length0 %zu\n", offsetof(mjModel, tendon_length0));
   printf("mjModel.tendon_invweight0 %zu\n", offsetof(mjModel, tendon_invweight0));
   printf("mjModel.tendon_user %zu\n", offsetof(mjModel, tendon_user));
@@ -707,6 +710,7 @@ int main(void) {
   printf("mjModel.key_mpos %zu\n", offsetof(mjModel, key_mpos));
   printf("mjModel.key_mquat %zu\n", offsetof(mjModel, key_mquat));
   printf("mjModel.key_ctrl %zu\n", offsetof(mjModel, key_ctrl));
+  printf("mjModel.key_plastic %zu\n", offsetof(mjModel, key_plastic));
   printf("mjModel.name_bodyadr %zu\n", offsetof(mjModel, name_bodyadr));
   printf("mjModel.name_jntadr %zu\n", offsetof(mjModel, name_jntadr));
   printf("mjModel.name_geomadr %zu\n", offsetof(mjModel, name_geomadr));
@@ -762,6 +766,7 @@ int main(void) {
   printf("mjContact.solreffriction %zu\n", offsetof(mjContact, solreffriction));
   printf("mjContact.solimp %zu\n", offsetof(mjContact, solimp));
   printf("mjContact.adhesion %zu\n", offsetof(mjContact, adhesion));
+  printf("mjContact.surfacevel %zu\n", offsetof(mjContact, surfacevel));
   printf("mjContact.mu %zu\n", offsetof(mjContact, mu));
   printf("mjContact.H %zu\n", offsetof(mjContact, H));
   printf("mjContact.dim %zu\n", offsetof(mjContact, dim));
@@ -839,6 +844,7 @@ int main(void) {
   printf("mjData.qvel %zu\n", offsetof(mjData, qvel));
   printf("mjData.act %zu\n", offsetof(mjData, act));
   printf("mjData.history %zu\n", offsetof(mjData, history));
+  printf("mjData.plastic %zu\n", offsetof(mjData, plastic));
   printf("mjData.qacc_warmstart %zu\n", offsetof(mjData, qacc_warmstart));
   printf("mjData.plugin_state %zu\n", offsetof(mjData, plugin_state));
   printf("mjData.ctrl %zu\n", offsetof(mjData, ctrl));
@@ -858,12 +864,15 @@ int main(void) {
   printf("mjData.xquat %zu\n", offsetof(mjData, xquat));
   printf("mjData.xmat %zu\n", offsetof(mjData, xmat));
   printf("mjData.xipos %zu\n", offsetof(mjData, xipos));
+  printf("mjData.xiquat %zu\n", offsetof(mjData, xiquat));
   printf("mjData.ximat %zu\n", offsetof(mjData, ximat));
   printf("mjData.xanchor %zu\n", offsetof(mjData, xanchor));
   printf("mjData.xaxis %zu\n", offsetof(mjData, xaxis));
   printf("mjData.geom_xpos %zu\n", offsetof(mjData, geom_xpos));
+  printf("mjData.geom_xquat %zu\n", offsetof(mjData, geom_xquat));
   printf("mjData.geom_xmat %zu\n", offsetof(mjData, geom_xmat));
   printf("mjData.site_xpos %zu\n", offsetof(mjData, site_xpos));
+  printf("mjData.site_xquat %zu\n", offsetof(mjData, site_xquat));
   printf("mjData.site_xmat %zu\n", offsetof(mjData, site_xmat));
   printf("mjData.cam_xpos %zu\n", offsetof(mjData, cam_xpos));
   printf("mjData.cam_xmat %zu\n", offsetof(mjData, cam_xmat));
@@ -880,8 +889,6 @@ int main(void) {
   printf("mjData.flexedge_hessian %zu\n", offsetof(mjData, flexedge_hessian));
   printf("mjData.flexedge_J %zu\n", offsetof(mjData, flexedge_J));
   printf("mjData.flexedge_length %zu\n", offsetof(mjData, flexedge_length));
-  printf("mjData.flexvert_J %zu\n", offsetof(mjData, flexvert_J));
-  printf("mjData.flexvert_length %zu\n", offsetof(mjData, flexvert_length));
   printf("mjData.bvh_aabb_dyn %zu\n", offsetof(mjData, bvh_aabb_dyn));
   printf("mjData.flexvert_lambda %zu\n", offsetof(mjData, flexvert_lambda));
   printf("mjData.flexvert_conage %zu\n", offsetof(mjData, flexvert_conage));
@@ -1129,6 +1136,7 @@ int main(void) {
   printf("mjsJoint.align %zu\n", offsetof(mjsJoint, align));
   printf("mjsJoint.stiffness %zu\n", offsetof(mjsJoint, stiffness));
   printf("mjsJoint.springref %zu\n", offsetof(mjsJoint, springref));
+  printf("mjsJoint.springyield %zu\n", offsetof(mjsJoint, springyield));
   printf("mjsJoint.springdamper %zu\n", offsetof(mjsJoint, springdamper));
   printf("mjsJoint.limited %zu\n", offsetof(mjsJoint, limited));
   printf("mjsJoint.range %zu\n", offsetof(mjsJoint, range));
@@ -1174,6 +1182,7 @@ int main(void) {
   printf("mjsGeom.material %zu\n", offsetof(mjsGeom, material));
   printf("mjsGeom.rgba %zu\n", offsetof(mjsGeom, rgba));
   printf("mjsGeom.group %zu\n", offsetof(mjsGeom, group));
+  printf("mjsGeom.castshadow %zu\n", offsetof(mjsGeom, castshadow));
   printf("mjsGeom.hfieldname %zu\n", offsetof(mjsGeom, hfieldname));
   printf("mjsGeom.meshname %zu\n", offsetof(mjsGeom, meshname));
   printf("mjsGeom.fitscale %zu\n", offsetof(mjsGeom, fitscale));
@@ -1261,8 +1270,10 @@ int main(void) {
   printf("mjsFlex.material %zu\n", offsetof(mjsFlex, material));
   printf("mjsFlex.young %zu\n", offsetof(mjsFlex, young));
   printf("mjsFlex.poisson %zu\n", offsetof(mjsFlex, poisson));
+  printf("mjsFlex.shear %zu\n", offsetof(mjsFlex, shear));
   printf("mjsFlex.damping %zu\n", offsetof(mjsFlex, damping));
   printf("mjsFlex.thickness %zu\n", offsetof(mjsFlex, thickness));
+  printf("mjsFlex.stressyield %zu\n", offsetof(mjsFlex, stressyield));
   printf("mjsFlex.elastic2d %zu\n", offsetof(mjsFlex, elastic2d));
   printf("mjsFlex.elastic3d %zu\n", offsetof(mjsFlex, elastic3d));
   printf("mjsFlex.section %zu\n", offsetof(mjsFlex, section));
@@ -1394,6 +1405,7 @@ int main(void) {
   printf("mjsTendon.element %zu\n", offsetof(mjsTendon, element));
   printf("mjsTendon.stiffness %zu\n", offsetof(mjsTendon, stiffness));
   printf("mjsTendon.springlength %zu\n", offsetof(mjsTendon, springlength));
+  printf("mjsTendon.springyield %zu\n", offsetof(mjsTendon, springyield));
   printf("mjsTendon.damping %zu\n", offsetof(mjsTendon, damping));
   printf("mjsTendon.frictionloss %zu\n", offsetof(mjsTendon, frictionloss));
   printf("mjsTendon.solref_friction %zu\n", offsetof(mjsTendon, solref_friction));
@@ -1497,6 +1509,7 @@ int main(void) {
   printf("mjsKey.mpos %zu\n", offsetof(mjsKey, mpos));
   printf("mjsKey.mquat %zu\n", offsetof(mjsKey, mquat));
   printf("mjsKey.ctrl %zu\n", offsetof(mjsKey, ctrl));
+  printf("mjsKey.plastic %zu\n", offsetof(mjsKey, plastic));
   printf("mjsKey.info %zu\n", offsetof(mjsKey, info));
   printf("mjsDefault %zu\n", sizeof(mjsDefault));
   printf("mjsDefault.element %zu\n", offsetof(mjsDefault, element));
@@ -1565,6 +1578,7 @@ int main(void) {
   printf("mjvGeom.shininess %zu\n", offsetof(mjvGeom, shininess));
   printf("mjvGeom.reflectance %zu\n", offsetof(mjvGeom, reflectance));
   printf("mjvGeom.texrepeat %zu\n", offsetof(mjvGeom, texrepeat));
+  printf("mjvGeom.castshadow %zu\n", offsetof(mjvGeom, castshadow));
   printf("mjvGeom.label %zu\n", offsetof(mjvGeom, label));
   printf("mjvGeom.camdist %zu\n", offsetof(mjvGeom, camdist));
   printf("mjvGeom.modelrbound %zu\n", offsetof(mjvGeom, modelrbound));
