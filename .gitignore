@@ -49,3 +49,4 @@ __pycache__/
 # Delphi IDE per-machine state
 *.delphilsp.json
 *.dsv
+

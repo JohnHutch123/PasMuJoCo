@@ -9,6 +9,12 @@
         <Projects Include="smoke\SmokeTest.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="classes\ClassesTest.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\samples\HelloMuJoCo\HelloMuJoCo.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -35,14 +41,32 @@
     <Target Name="SmokeTest:Make">
         <MSBuild Projects="smoke\SmokeTest.dproj" Targets="Make"/>
     </Target>
+    <Target Name="ClassesTest">
+        <MSBuild Projects="classes\ClassesTest.dproj"/>
+    </Target>
+    <Target Name="ClassesTest:Clean">
+        <MSBuild Projects="classes\ClassesTest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ClassesTest:Make">
+        <MSBuild Projects="classes\ClassesTest.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="HelloMuJoCo">
+        <MSBuild Projects="..\samples\HelloMuJoCo\HelloMuJoCo.dproj"/>
+    </Target>
+    <Target Name="HelloMuJoCo:Clean">
+        <MSBuild Projects="..\samples\HelloMuJoCo\HelloMuJoCo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="HelloMuJoCo:Make">
+        <MSBuild Projects="..\samples\HelloMuJoCo\HelloMuJoCo.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="LayoutTest;SmokeTest"/>
+        <CallTarget Targets="LayoutTest;SmokeTest;ClassesTest;HelloMuJoCo"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="LayoutTest:Clean;SmokeTest:Clean"/>
+        <CallTarget Targets="LayoutTest:Clean;SmokeTest:Clean;ClassesTest:Clean;HelloMuJoCo:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="LayoutTest:Make;SmokeTest:Make"/>
+        <CallTarget Targets="LayoutTest:Make;SmokeTest:Make;ClassesTest:Make;HelloMuJoCo:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
