@@ -132,6 +132,10 @@ mj_step(m, d);
 - `tests/classes/ClassesTest.dpr` covers the wrapper classes (23 checks),
   including error handling.
 
+GitHub Actions runs all of this on Linux for every pull request and push to
+`main` (`.github/workflows/tests.yml`), and also fails if the generated files
+don't match the generator's output.
+
 On Linux, `tests/run_tests_linux.sh /path/to/mujoco-4.0.1` builds and runs
 them all with Free Pascal. On Windows, build the `.dpr` files in Delphi with
 `src` on the search path, put `mujoco.dll` and `pendulum.xml` next to the
