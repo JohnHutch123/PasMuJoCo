@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{3579AE10-BE4A-483E-9413-794E26B1EEBE}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="layout\LayoutTest.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="smoke\SmokeTest.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="LayoutTest">
+        <MSBuild Projects="layout\LayoutTest.dproj"/>
+    </Target>
+    <Target Name="LayoutTest:Clean">
+        <MSBuild Projects="layout\LayoutTest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="LayoutTest:Make">
+        <MSBuild Projects="layout\LayoutTest.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SmokeTest">
+        <MSBuild Projects="smoke\SmokeTest.dproj"/>
+    </Target>
+    <Target Name="SmokeTest:Clean">
+        <MSBuild Projects="smoke\SmokeTest.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SmokeTest:Make">
+        <MSBuild Projects="smoke\SmokeTest.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="LayoutTest;SmokeTest"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="LayoutTest:Clean;SmokeTest:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="LayoutTest:Make;SmokeTest:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
