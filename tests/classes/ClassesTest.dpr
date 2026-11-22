@@ -134,7 +134,7 @@ begin
     LibraryFile := ParamStr(2);
 
   WriteLn('initialisation');
-  CheckRaises(LoadBadLibrary, 'Could not load', 'bad library name raises EMuJoCo');
+  CheckRaises(LoadBadLibrary, 'Could not load', 'a missing library is reported as EMuJoCo (this error is expected)');
   MuJoCoInitialize(LibraryFile);
   Check(MuJoCoLibraryLoaded, 'MuJoCoInitialize loads MuJoCo ' + string(mj_versionString()));
   MuJoCoInitialize(LibraryFile);
