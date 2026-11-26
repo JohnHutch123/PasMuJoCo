@@ -45,3 +45,9 @@ Thumbs.db
 
 # Python
 __pycache__/
+
+# Delphi IDE per-machine state
+*.delphilsp.json
+*.dsv
+
+*.res

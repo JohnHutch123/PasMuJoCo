@@ -19,7 +19,7 @@ never imports or runs them.
 ## Steps (Linux, Python 3.8+, gcc, Free Pascal)
 
 ```sh
-VER=3.17.0
+VER=4.0.1
 # 1. MuJoCo release (headers + library) and the matching introspect metadata
 curl -LO https://github.com/google-deepmind/mujoco/releases/download/$VER/mujoco-$VER-linux-x86_64.tar.gz
 tar xzf mujoco-$VER-linux-x86_64.tar.gz

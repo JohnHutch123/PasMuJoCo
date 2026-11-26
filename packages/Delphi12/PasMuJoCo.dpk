@@ -32,6 +32,7 @@ requires
   rtl;
 
 contains
-  PasMuJoCo in '..\..\src\PasMuJoCo.pas';
+  PasMuJoCo in '..\..\src\PasMuJoCo.pas',
+  PasMuJoCoClasses in '..\..\src\PasMuJoCoClasses.pas';
 
 end.

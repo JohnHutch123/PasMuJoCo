@@ -35,3 +35,11 @@ echo "== smoke test"
 fpcbuild "$here/smoke/SmokeTest.dpr"
 LD_LIBRARY_PATH="$mujoco/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
   "$out/SmokeTest" "$here/models/pendulum.xml"
+
+echo "== classes test"
+fpcbuild "$here/classes/ClassesTest.dpr"
+LD_LIBRARY_PATH="$mujoco/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
+  "$out/ClassesTest" "$here/models/pendulum.xml"
+
+echo "== sample builds"
+fpcbuild "$root/samples/HelloMuJoCo/HelloMuJoCo.dpr"
