@@ -1,4 +1,4 @@
-{ PasMuJoCo - Object Pascal header for the MuJoCo 3.17.0 C API.
+{ PasMuJoCo - Object Pascal header for the MuJoCo 4.0.1 C API.
 
   Copyright 2026 John Hutchings
   Licensed under the Apache License, Version 2.0 (see LICENSE).
@@ -48,7 +48,7 @@ const
 {$endif}
 
   // MuJoCo version these declarations were generated from (major*1000000 + minor*1000 + patch).
-  mjVERSION_HEADER = 3017000;
+  mjVERSION_HEADER = 4000001;
 
   //---------------------------------------------------------------------------
   // constants
@@ -118,7 +118,8 @@ const
   mjENBL_SLEEP = 16;
   mjENBL_DIAGEXACT = 32;
   mjENBL_IPC = 64;
-  mjNENABLE = 7;
+  mjENBL_SPECULATIVE = 128;
+  mjNENABLE = 8;
 
   // mjtJoint
   mjJNT_FREE = 0;
@@ -218,6 +219,10 @@ const
   mjEQ_FLEXVERT = 5;
   mjEQ_FLEXSTRAIN = 6;
   mjEQ_DISTANCE = 7;
+
+  // mjtTendon
+  mjTENDON_FIXED = 0;
+  mjTENDON_SPATIAL = 1;
 
   // mjtWrap
   mjWRAP_NONE = 0;
@@ -449,11 +454,12 @@ const
   mjSTATE_MOCAP_QUAT = 2048;
   mjSTATE_USERDATA = 4096;
   mjSTATE_PLUGIN = 8192;
-  mjNSTATE = 14;
-  mjSTATE_PHYSICS = 30;
-  mjSTATE_FULLPHYSICS = 8223;
+  mjSTATE_PLASTIC = 16384;
+  mjNSTATE = 15;
+  mjSTATE_PHYSICS = 16414;
+  mjSTATE_FULLPHYSICS = 24607;
   mjSTATE_USER = 8128;
-  mjSTATE_INTEGRATION = 16383;
+  mjSTATE_INTEGRATION = 32767;
 
   // mjtConstraint
   mjCNSTR_EQUALITY = 0;
@@ -731,7 +737,8 @@ const
   mjRND_SEGMENT = 8;
   mjRND_IDCOLOR = 9;
   mjRND_CULL_FACE = 10;
-  mjNRNDFLAG = 11;
+  mjRND_POST_PROCESSING = 11;
+  mjNRNDFLAG = 12;
 
   // mjtStereo
   mjSTEREO_NONE = 0;
@@ -877,6 +884,7 @@ type
   mjtJacobian = Int32;
   mjtSolver = Int32;
   mjtEq = Int32;
+  mjtTendon = Int32;
   mjtWrap = Int32;
   mjtTrn = Int32;
   mjtDyn = Int32;
@@ -1210,7 +1218,7 @@ type
     ambient: array[0..2] of Single;              // ambient rgb (alpha=1)
     diffuse: array[0..2] of Single;              // diffuse rgb (alpha=1)
     specular: array[0..2] of Single;             // specular rgb (alpha=1)
-    active: Int32;                               // is headlight active
+    active: Int32;                               // is headlight active (0: no, 1: yes, 2: auto)
   end;
 
   mjVisual_map = record
@@ -1331,7 +1339,6 @@ type
     nflexshelldata: mjtSize;                     // number of shell fragment vertex ids in all flexes
     nflextexcoord: mjtSize;                      // number of vertices with texture coordinates
     nJfe: mjtSize;                               // number of non-zeros in sparse flexedge Jacobian matrix
-    nJfv: mjtSize;                               // number of non-zeros in sparse flexvert Jacobian matrix
     nmesh: mjtSize;                              // number of meshes
     nmeshvert: mjtSize;                          // number of vertices in all meshes
     nmeshnormal: mjtSize;                        // number of normals in all meshes
@@ -1379,6 +1386,7 @@ type
     nuser_sensor: mjtSize;                       // number of mjtNums in sensor_user
     nnames: mjtSize;                             // number of chars in all names
     npaths: mjtSize;                             // number of chars in all paths
+    nplastic: mjtSize;                           // number of mjtNums in plastic state vector
     nnames_map: mjtSize;                         // number of slots in the names hash map
     nJmom: mjtSize;                              // number of non-zeros in sparse actuator_moment matrix
     ngravcomp: mjtSize;                          // number of bodies with nonzero gravcomp
@@ -1445,6 +1453,7 @@ type
     jnt_bodyid: PmjInt32;                        // id of joint's body
     jnt_actuatorid: PmjInt32;                    // actuator contributing damping / armature
     jnt_group: PmjInt32;                         // group for visibility
+    jnt_plasticadr: PmjInt32;                    // start addr in plastic state (-1: none)
     jnt_limited: PmjtBool;                       // does joint have limits
     jnt_actfrclimited: PmjtBool;                 // does joint have actuator force limits
     jnt_actgravcomp: PmjtBool;                   // is gravcomp force applied via actuators
@@ -1454,6 +1463,7 @@ type
     jnt_axis: PmjtNum;                           // local joint axis
     jnt_stiffness: PmjtNum;                      // linear stiffness coefficient
     jnt_stiffnesspoly: PmjtNum;                  // high-order stiffness coefficients
+    jnt_springyield: PmjtNum;                    // plastic yield threshold
     jnt_range: PmjtNum;                          // joint limits
     jnt_actfrcrange: PmjtNum;                    // range of total actuator force
     jnt_margin: PmjtNum;                         // min distance for limit detection
@@ -1489,6 +1499,7 @@ type
     geom_priority: PmjInt32;                     // geom contact priority
     geom_plugin: PmjInt32;                       // plugin instance id; -1: not in use
     geom_sameframe: PmjtByte;                    // same frame as body (mjtSameframe)
+    geom_castshadow: PmjtBool;                   // does geom cast shadows
     geom_solmix: PmjtNum;                        // mixing coef for solref/imp in geom pair
     geom_solref: PmjtNum;                        // constraint solver reference: contact
     geom_solimp: PmjtNum;                        // constraint solver impedance: contact
@@ -1584,14 +1595,14 @@ type
     flex_stiffnessadr: PmjInt32;                 // stiffness matrix address
     flex_elemedgeadr: PmjInt32;                  // first element edge id address
     flex_bendingadr: PmjInt32;                   // first bending data address
+    flex_plasticadr: PmjInt32;                   // plastic state address; -1: elastic
+    flex_plasticmode: PmjInt32;                  // plastic state bits; 1: bend, 2: stretch
     flex_shellnum: PmjInt32;                     // number of shells
     flex_shelldataadr: PmjInt32;                 // first shell data address
     flex_texcoordadr: PmjInt32;                  // address in flex_texcoord; -1: none
     flex_nodebodyid: PmjInt32;                   // node body ids
     flex_vertbodyid: PmjInt32;                   // vertex body ids
-    flex_vertedgeadr: PmjInt32;                  // first edge address
-    flex_vertedgenum: PmjInt32;                  // number of edges
-    flex_vertedge: PmjInt32;                     // edge indices
+    flex_vertcell: PmjInt32;                     // finite cell index for vertex; -1: none
     flex_edge: PmjInt32;                         // edge vertex ids (2 per edge)
     flex_edgeflap: PmjInt32;                     // adjacent vertex ids (dim=2 only)
     flex_elem: PmjInt32;                         // element vertex ids (dim+1 per elem)
@@ -1601,7 +1612,6 @@ type
     flex_shell: PmjInt32;                        // shell fragment vertex ids (dim per frag)
     flex_vert: PmjtNum;                          // vertex positions in local body frames
     flex_vert0: PmjtNum;                         // vertex positions in qpos0 on [0, 1]^d
-    flex_vertmetric: PmjtNum;                    // inverse of reference shape matrix
     flex_node: PmjtNum;                          // node positions in local body frames
     flex_node0: PmjtNum;                         // Cartesian node positions in qpos0
     flexedge_length0: PmjtNum;                   // edge lengths in qpos0
@@ -1617,9 +1627,10 @@ type
     efm0_L: PmjtNum;                             // factor of M + (dt^2+dt*d)*K_bend
     efmC_perm: PmjInt32;                         // sparse factor order: vertex dof or -1
     flex_damping: PmjtNum;                       // Rayleigh's damping coefficient
+    flex_yield: PmjtNum;                         // yield strain (stretch, bend); 0: elastic
     flex_edgestiffness: PmjtNum;                 // edge stiffness
     flex_edgedamping: PmjtNum;                   // edge damping
-    flex_edgeequality: PmjInt32;                 // 0:none, 1:edges, 2:vertices, 3:strain
+    flex_edgeequality: PmjInt32;                 // 0:none, 1:edges, 3:strain
     flex_rigid: PmjtBool;                        // are all vertices in the same body
     flexedge_rigid: PmjtBool;                    // are both edge vertices in same body
     flex_centered: PmjtBool;                     // are all vertex coordinates (0,0,0)
@@ -1629,9 +1640,6 @@ type
     flexedge_J_rownnz: PmjInt32;                 // number of non-zeros in Jacobian row
     flexedge_J_rowadr: PmjInt32;                 // row start address in colind array
     flexedge_J_colind: PmjInt32;                 // column indices in sparse Jacobian
-    flexvert_J_rownnz: PmjInt32;                 // number of non-zeros in Jacobian row
-    flexvert_J_rowadr: PmjInt32;                 // row start address in colind array
-    flexvert_J_colind: PmjInt32;                 // column indices in sparse Jacobian
     flex_rgba: PmjSingle;                        // rgba when material is omitted
     flex_texcoord: PmjSingle;                    // vertex texture coordinates
     mesh_vertadr: PmjInt32;                      // first vertex address
@@ -1735,11 +1743,13 @@ type
     eq_solref: PmjtNum;                          // constraint solver reference
     eq_solimp: PmjtNum;                          // constraint solver impedance
     eq_data: PmjtNum;                            // numeric data for constraint
+    tendon_type: PmjInt32;                       // type of tendon (mjtTendon)
     tendon_adr: PmjInt32;                        // address of first object in tendon's path
     tendon_num: PmjInt32;                        // number of objects in tendon's path
     tendon_matid: PmjInt32;                      // material id for rendering
     tendon_actuatorid: PmjInt32;                 // actuator contributing damping / armature
     tendon_group: PmjInt32;                      // group for visibility
+    tendon_plasticadr: PmjInt32;                 // start addr in plastic state (-1: none)
     tendon_treenum: PmjInt32;                    // number of trees along tendon's path
     tendon_treeid: PmjInt32;                     // first two trees along tendon's path
     ten_J_rownnz: PmjInt32;                      // number of non-zeros in Jacobian row
@@ -1762,6 +1772,7 @@ type
     tendon_armature: PmjtNum;                    // inertia associated with tendon velocity
     tendon_frictionloss: PmjtNum;                // loss due to friction
     tendon_lengthspring: PmjtNum;                // spring resting length range
+    tendon_springyield: PmjtNum;                 // plastic yield threshold
     tendon_length0: PmjtNum;                     // tendon length in qpos0
     tendon_invweight0: PmjtNum;                  // inv. weight in qpos0
     tendon_user: PmjtNum;                        // user data
@@ -1846,6 +1857,7 @@ type
     key_mpos: PmjtNum;                           // key mocap position
     key_mquat: PmjtNum;                          // key mocap quaternion
     key_ctrl: PmjtNum;                           // key control
+    key_plastic: PmjtNum;                        // key plastic state
     name_bodyadr: PmjInt32;                      // body name pointers
     name_jntadr: PmjInt32;                       // joint name pointers
     name_geomadr: PmjInt32;                      // geom name pointers
@@ -1905,6 +1917,7 @@ type
     solreffriction: array[0..1] of mjtNum;       // constraint solver reference, friction directions
     solimp: array[0..4] of mjtNum;               // constraint solver impedance
     adhesion: mjtNum;                            // adhesive force along the contact normal
+    surfacevel: array[0..2] of mjtNum;           // surface velocity (geom[1] - geom[0]): tangent1, 2, spin
     mu: mjtNum;                                  // friction of regularized cone, set by mj_makeConstraint
     H: array[0..35] of mjtNum;                   // cone Hessian, set by mj_constraintUpdate
     dim: Int32;                                  // contact space dimensionality: 1, 3, 4 or 6
@@ -1963,13 +1976,13 @@ type
     nl: Int32;                                   // number of limit constraints
     nefc: Int32;                                 // number of constraints
     nJ: Int32;                                   // number of non-zeros in constraint Jacobian
-    efm_active: Int32;                           // implicit effective metric M+K is active (see mj_effBuild)
+    efm_active: Int32;                           // effective metric M+K: 0 off, 1 on, 2 on with general flex CSR
     nefmK: Int32;                                // number of non-zeros in effective-stiffness CSR
     nefmcon: Int32;                              // packed length of the contact rank-1 rows
     nefmT: Int32;                                // number of tendons with terms in the metric
     nefmA: Int32;                                // number of actuators with terms in the metric
-    nefmdof: Int32;                              // number of 3x3 blocks in the effective-metric preconditioner
-    nefmL: Int32;                                // size of efm_L (9*nefmdof plus optional Cholesky or island tail)
+    nefmdof: Int32;                              // number of covered vertex triples in the effective metric
+    nefmL: Int32;                                // size of efm_L (packed Cholesky factor or island lists)
     nY: Int32;                                   // number of non-zeros in constraint inverse inertia square root
     nA: Int32;                                   // number of non-zeros in constraint inverse inertia matrix
     nisland: Int32;                              // number of detected constraint islands
@@ -1990,6 +2003,7 @@ type
     qvel: PmjtNum;                               // velocity
     act: PmjtNum;                                // actuator activation
     history: PmjtNum;                            // history buffer
+    plastic: PmjtNum;                            // plastic state
     qacc_warmstart: PmjtNum;                     // acceleration used for warmstart
     plugin_state: PmjtNum;                       // plugin state
     ctrl: PmjtNum;                               // control
@@ -2009,12 +2023,15 @@ type
     xquat: PmjtNum;                              // Cartesian orientation of body frame
     xmat: PmjtNum;                               // Cartesian orientation of body frame
     xipos: PmjtNum;                              // Cartesian position of body com
+    xiquat: PmjtNum;                             // Cartesian orientation of body inertia
     ximat: PmjtNum;                              // Cartesian orientation of body inertia
     xanchor: PmjtNum;                            // Cartesian position of joint anchor
     xaxis: PmjtNum;                              // Cartesian joint axis
     geom_xpos: PmjtNum;                          // Cartesian geom position
+    geom_xquat: PmjtNum;                         // Cartesian geom orientation
     geom_xmat: PmjtNum;                          // Cartesian geom orientation
     site_xpos: PmjtNum;                          // Cartesian site position
+    site_xquat: PmjtNum;                         // Cartesian site orientation
     site_xmat: PmjtNum;                          // Cartesian site orientation
     cam_xpos: PmjtNum;                           // Cartesian camera position
     cam_xmat: PmjtNum;                           // Cartesian camera orientation
@@ -2031,8 +2048,6 @@ type
     flexedge_hessian: PmjtNum;                   // oriented off-diagonal Hessian blocks
     flexedge_J: PmjtNum;                         // flex edge Jacobian
     flexedge_length: PmjtNum;                    // flex edge lengths
-    flexvert_J: PmjtNum;                         // flex vertex Jacobian
-    flexvert_length: PmjtNum;                    // flex vertex lengths
     bvh_aabb_dyn: PmjtNum;                       // global bounding box (center, size)
     flexvert_lambda: PmjtNum;                    // flex contact multiplier
     flexvert_conage: PmjInt32;                   // flex contact age: <0 loaded, >0 steps since
@@ -2154,7 +2169,7 @@ type
     efm_dofid: PmjInt32;                         // block k -> dof address of its vertex triple
     efm_con_ind: PmjInt32;                       // contact rows, packed [nnz, conid, colind...]
     efm_con_val: PmjtNum;                        // contact rows, packed [scale, force, val...]
-    efm_L: PmjtNum;                              // factored 3x3 blocks of M+K and packed tail data
+    efm_L: PmjtNum;                              // packed Cholesky factor of M+K or island lists
     efc_b: PmjtNum;                              // linear cost term: J*qacc_smooth - aref
     iefc_aref: PmjtNum;                          // reference pseudo-acceleration
     iefc_state: PmjInt32;                        // constraint state (mjtConstraintState)
@@ -2298,6 +2313,7 @@ type
     align: mjtAlignFree;                         // align free joint with body com
     stiffness: array[0..2] of Double;            // stiffness coefficients
     springref: Double;                           // spring reference value: qpos_spring
+    springyield: Double;                         // plastic yield threshold (0: elastic)
     springdamper: array[0..1] of Double;         // timeconst, dampratio
     limited: mjtLimited;                         // does joint have limits
     range: array[0..1] of Double;                // joint limits
@@ -2345,6 +2361,7 @@ type
     material: Pointer;                           // name of material
     rgba: array[0..3] of Single;                 // rgba when material is omitted
     group: Int32;                                // group
+    castshadow: mjtBool;                         // does geom cast shadows
     hfieldname: Pointer;                         // heightfield attached to geom
     meshname: Pointer;                           // mesh attached to geom
     fitscale: Double;                            // scale mesh uniformly
@@ -2440,8 +2457,10 @@ type
     material: Pointer;                           // name of material used for rendering
     young: Double;                               // Young's modulus
     poisson: Double;                             // Poisson's ratio
+    shear: Double;                               // 1D torsion shear modulus; 0: young / (2 (1 + poisson))
     damping: Double;                             // Rayleigh's damping
     thickness: Double;                           // thickness (2D only)
+    stressyield: array[0..1] of Double;          // yield strain thresholds (stretch, bend); 0: elastic
     elastic2d: Int32;                            // 2D passive forces; 0: none, 1: bending, 2: stretching, 3: both
     elastic3d: Int32;                            // experimental 3D material (mjSpec only); 0: Saint Venant-Kirchhoff, 1: Stable Neo-Hookean
     section: mjtFlexSection;                     // 1D cross-section (mjtFlexSection)
@@ -2591,6 +2610,7 @@ type
     element: PmjsElement;                        // element type
     stiffness: array[0..2] of Double;            // stiffness coefficients
     springlength: array[0..1] of Double;         // spring resting length; {-1, -1}: use qpos_spring
+    springyield: Double;                         // plastic yield threshold (0: elastic)
     damping: array[0..2] of Double;              // damping coefficients
     frictionloss: Double;                        // friction loss
     solref_friction: array[0..1] of mjtNum;      // solver reference: tendon friction
@@ -2708,6 +2728,7 @@ type
     mpos: Pointer;                               // mocap pos
     mquat: Pointer;                              // mocap quat
     ctrl: Pointer;                               // ctrl
+    plastic: Pointer;                            // plastic
     info: Pointer;                               // message appended to compiler errors
   end;
 
@@ -2768,7 +2789,7 @@ type
 
   mjvGeom = record
     &type: Int32;                                // geom type (mjtGeom)
-    dataid: Int32;                               // mesh, hfield or plane id; -1: none; mesh: 2*id or 2*id+1 (hull)
+    dataid: Int32;                               // mesh, hfield or plane id; -1: none; mesh: 2*id or 2*id+1 (hull); multi-material flex: material slice index
     objtype: Int32;                              // mujoco object type; mjOBJ_UNKNOWN for decor
     objid: Int32;                                // mujoco object id; -1 for decor
     category: Int32;                             // visual category
@@ -2777,7 +2798,7 @@ type
     texuniform: Int32;                           // uniform cube mapping
     texcoord: Int32;                             // mesh or flex geom has texture coordinates
     segid: Int32;                                // segmentation id; -1: not shown
-    size: array[0..2] of Single;                 // size parameters
+    size: array[0..2] of Single;                 // size parameters; multi-material flex: (radius, face offset, face count)
     pos: array[0..2] of Single;                  // Cartesian position
     mat: array[0..8] of Single;                  // Cartesian orientation
     rgba: array[0..3] of Single;                 // color and transparency
@@ -2786,6 +2807,7 @@ type
     shininess: Single;                           // shininess coef
     reflectance: Single;                         // reflectance coef
     texrepeat: array[0..1] of Single;            // texture repetition for 2d mapping
+    castshadow: mjtByte;                         // does geom cast shadows
     &label: array[0..99] of AnsiChar;            // text label
     camdist: Single;                             // distance to camera (used by sorter)
     modelrbound: Single;                         // geom rbound from model, 0 if not model geom
@@ -2863,7 +2885,7 @@ type
     rotate: array[0..3] of Single;               // model quaternion rotation
     scale: Single;                               // model scaling
     stereo: Int32;                               // stereoscopic rendering (mjtStereo)
-    flags: array[0..10] of mjtByte;              // rendering flags (indexed by mjtRndFlag)
+    flags: array[0..11] of mjtByte;              // rendering flags (indexed by mjtRndFlag)
     framewidth: Int32;                           // frame pixel width; 0: disable framing
     framergb: array[0..2] of Single;             // frame color
     status: Int32;                               // 0: ok, 1: geoms exhausted, warning issued
@@ -3418,7 +3440,7 @@ type
   Tmj_getPluginConfig = function(m: PmjModel; plugin_id: Int32; attrib: PAnsiChar): PAnsiChar; cdecl;
   // Load a dynamic library. The dynamic library is assumed to register one or more plugins.
   Tmj_loadPluginLibrary = procedure(path: PAnsiChar); cdecl;
-  // Scan a directory and load all dynamic libraries. Dynamic libraries in the specified directory are assumed to register one or more plugins. Optionally, if a callback is specified, it is called for each dynamic library encountered that registers plugins.
+  // Scan a directory and load all dynamic libraries. Dynamic libraries in the specified directory are assumed to register one or more plugins. Optionally, if a callback is specified, it is called for each dynamic library encountered that registers plugins. A library that fails to load is skipped with a warning.
   Tmj_loadAllPluginLibraries = procedure(directory: PAnsiChar; callback: mjfPluginLibraryLoadCallback); cdecl;
   // Return version number: 1.0.2 is encoded as 102.
   Tmj_version = function: Int32; cdecl;
@@ -4034,6 +4056,8 @@ type
   Tmjs_getName = function(element: PmjsElement): Pointer; cdecl;
   // Get string contents.
   Tmjs_getString = function(source: Pointer): PAnsiChar; cdecl;
+  // Get entry in string vector, or NULL if out of bounds.
+  Tmjs_getInStringVec = function(source: Pointer; i: Int32): PAnsiChar; cdecl;
   // Get double array contents and optionally its size.
   Tmjs_getDouble = function(source: Pointer; size: PmjInt32): PmjDouble; cdecl;
   // Get number of elements a tendon wraps.
@@ -4697,6 +4721,7 @@ var
   mjs_setPluginAttributes: Tmjs_setPluginAttributes = nil;
   mjs_getName: Tmjs_getName = nil;
   mjs_getString: Tmjs_getString = nil;
+  mjs_getInStringVec: Tmjs_getInStringVec = nil;
   mjs_getDouble: Tmjs_getDouble = nil;
   mjs_getWrapNum: Tmjs_getWrapNum = nil;
   mjs_getWrap: Tmjs_getWrap = nil;
@@ -5340,6 +5365,7 @@ begin
   @mjs_setPluginAttributes := mjGetProc('mjs_setPluginAttributes');
   @mjs_getName := mjGetProc('mjs_getName');
   @mjs_getString := mjGetProc('mjs_getString');
+  @mjs_getInStringVec := mjGetProc('mjs_getInStringVec');
   @mjs_getDouble := mjGetProc('mjs_getDouble');
   @mjs_getWrapNum := mjGetProc('mjs_getWrapNum');
   @mjs_getWrap := mjGetProc('mjs_getWrap');

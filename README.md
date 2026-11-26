@@ -11,7 +11,7 @@ resolved at runtime from the MuJoCo shared library (`LoadLibrary` /
 statically, so an application starts even when MuJoCo is missing and can
 report that cleanly.
 
-> **Status:** the MuJoCo 3.17.0 header, dynamic loader and thin wrapper
+> **Status:** the MuJoCo 4.0.1 header, dynamic loader and thin wrapper
 > classes are in place, tested with Delphi 12 (Win64) and Free Pascal (Linux).
 
 ## Targets
@@ -21,7 +21,7 @@ report that cleanly.
 | Windows x64  | Delphi 12 or Delphi 13       | `mujoco.dll`     |
 | Linux x86_64 | Free Pascal 3.2.2 or later   | `libmujoco.so`   |
 
-MuJoCo version: **3.17.0**. The loader checks `mj_version()` when it loads the
+MuJoCo version: **4.0.1**. The loader checks `mj_version()` when it loads the
 library and refuses a library that doesn't match the header's version,
 because MuJoCo's struct layouts change between releases.
 
@@ -41,7 +41,7 @@ tools/                Header generator (see tools/README.md)
 
 ## Getting MuJoCo
 
-Download a 3.x release from
+Download the 4.0.1 release from
 <https://github.com/google-deepmind/mujoco/releases>:
 
 - **Windows:** use `mujoco-<ver>-windows-x86_64.zip` and put `bin\mujoco.dll`
@@ -126,13 +126,17 @@ mj_step(m, d);
 ## Tests
 
 - `tests/layout/LayoutTest.dpr` checks `SizeOf` and every field offset of
-  every record (1803 checks) against the C layout of the same release.
+  every record (1817 checks) against the C layout of the same release.
 - `tests/smoke/SmokeTest.dpr` loads the library, loads
   `tests/models/pendulum.xml` and steps it, using the raw API only.
 - `tests/classes/ClassesTest.dpr` covers the wrapper classes (23 checks),
   including error handling.
 
-On Linux, `tests/run_tests_linux.sh /path/to/mujoco-3.17.0` builds and runs
+GitHub Actions runs all of this on Linux for every pull request and push to
+`main` (`.github/workflows/tests.yml`), and also fails if the generated files
+don't match the generator's output.
+
+On Linux, `tests/run_tests_linux.sh /path/to/mujoco-4.0.1` builds and runs
 them all with Free Pascal. On Windows, build the `.dpr` files in Delphi with
 `src` on the search path, put `mujoco.dll` and `pendulum.xml` next to the
 exe, and run them (started from the IDE they wait for Enter before closing).

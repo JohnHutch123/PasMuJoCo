@@ -1,0 +1,59 @@
+# Builds and runs the PasMuJoCo tests with Free Pascal on Linux against the
+# MuJoCo release named by tests/layout/expected_<version>.txt, and checks that
+# the generated files match what tools/generate_header.py produces.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-fpc:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Free Pascal
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fpc
+          fpc -iV
+
+      - name: Find MuJoCo version
+        id: ver
+        run: |
+          f=$(ls tests/layout/expected_*.txt)
+          v=${f##*expected_}
+          echo "mujoco=${v%.txt}" >> "$GITHUB_OUTPUT"
+
+      - name: Download MuJoCo ${{ steps.ver.outputs.mujoco }}
+        env:
+          V: ${{ steps.ver.outputs.mujoco }}
+        run: |
+          curl -sSfL "https://github.com/google-deepmind/mujoco/releases/download/$V/mujoco-$V-linux-x86_64.tar.gz" \
+            | tar xz -C "$RUNNER_TEMP"
+          git clone -q --depth 1 --branch "$V" --filter=blob:none --sparse \
+            https://github.com/google-deepmind/mujoco "$RUNNER_TEMP/mujoco-src"
+          git -C "$RUNNER_TEMP/mujoco-src" sparse-checkout set python/mujoco/introspect
+
+      - name: Generated files are up to date
+        env:
+          V: ${{ steps.ver.outputs.mujoco }}
+        run: |
+          python3 -I tools/generate_header.py \
+            --introspect "$RUNNER_TEMP/mujoco-src/python/mujoco/introspect" \
+            --include "$RUNNER_TEMP/mujoco-$V/include" \
+            --expected "tests/layout/expected_$V.txt"
+          git diff --exit-code || {
+            echo "::error::Generated files differ from the generator output; rerun tools/generate_header.py and commit"
+            exit 1
+          }
+
+      - name: Layout, smoke and classes tests
+        env:
+          V: ${{ steps.ver.outputs.mujoco }}
+        run: MUJOCO_INCLUDE_CHECK=1 tests/run_tests_linux.sh "$RUNNER_TEMP/mujoco-$V"
